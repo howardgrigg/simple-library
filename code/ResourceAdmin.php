@@ -4,4 +4,5 @@ class ResourceAdmin extends ModelAdmin {
   static $url_segment = 'resources';
   static $menu_title = 'Library Admin';
   static $model_importers = array();
+  private static $menu_icon = 'library/img/admin-icon.png'; 
 }
