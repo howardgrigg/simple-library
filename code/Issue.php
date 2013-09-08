@@ -15,7 +15,6 @@ class Issue extends DataObject{
   public function populateDefaults() {
     $this->DueDate = date("Y-m-d",strtotime("+3 weeks"));
     $this->Returned = false;
-//    $this->Holding->Issued = true;
     parent::populateDefaults();
   } 
   private static $summary_fields = array(
@@ -35,7 +34,9 @@ class Issue extends DataObject{
     "ReturnedDate",
     "Returned"
   );
+  
   static $default_sort = 'Created DESC';
+  
   public function getTitle() {
     return "Issue: {$this->ID}";
   }
@@ -49,4 +50,21 @@ class Issue extends DataObject{
     $this->Holding()->write();
     parent::onBeforeWrite();
   }
+  
+  public function saveIssue($memberID, $barcode){
+    $holding = Holding::get()->filter("Barcode", $barcode)->first();
+    $member = Member::get()->byID($memberID);
+
+    if($holding != null && $member != null && $holding->Available() == true){
+        $this->MemberID = $memberID;
+        $this->HoldingID = $holding->ID;
+        $holding->Issued = true;
+        $holding->write();
+        $this->write();
+        return true;
+      }else{
+        return false;
+      }
+  }
+  
 }
